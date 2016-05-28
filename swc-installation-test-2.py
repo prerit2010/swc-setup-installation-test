@@ -250,6 +250,7 @@ class DependencyError (Exception):
 def check(checks=None):
     successes = []
     failures = []
+    failure_messages = []
     if not checks:
         checks = CHECKS
     for check in checks:
@@ -261,8 +262,9 @@ def check(checks=None):
         try:
             version = checker.check()
         except DependencyError as e:
-            failures.append(e)
+            failure_messages.append(e)
             _sys.stdout.write('fail\n')
+            failures.append((checker, version))
         else:
             _sys.stdout.write('pass\n')
             successes.append((checker, version))
@@ -275,7 +277,8 @@ def check(checks=None):
     if failures:
         print('\nFailures:')
         failures = list(set(failures))
-        for failure in failures:
+        failure_messages = list(set(failure_messages))
+        for failure in failure_messages:
             print()
             print(failure)
         return False
