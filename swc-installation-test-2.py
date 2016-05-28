@@ -274,12 +274,10 @@ def check(checks=None):
                     version or 'unknown'))
     if failures:
         print('\nFailures:')
-        printed = []
+        failures = list(set(failures))
         for failure in failures:
-            if failure not in printed:
-                print()
-                print(failure)
-                printed.append(failure)
+            print()
+            print(failure)
         return False
     return True
 
