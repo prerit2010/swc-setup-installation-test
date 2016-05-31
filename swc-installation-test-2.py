@@ -277,12 +277,12 @@ def check(checks=None):
     if failures:
         print('\nFailures:')
         failures = list(set(failures))
-        failure_messages = list(set(failure_messages))
+        failure_messages = set(failure_messages)
         for failure in failure_messages:
             print()
             print(failure)
-        return False
-    return True
+        return (False, successes, failures)
+    return (True, successes, failures)
 
 
 class Dependency (object):
@@ -1011,6 +1011,41 @@ def print_suggestions(instructor_fallback=True):
         print('For help, email the *entire* output of this script to')
         print('your instructor.')
 
+def send_to_server(successes_list, failures_list):
+    """
+    This function sends the details of failures and successes to server.
+    
+    """
+    import json
+    try: 
+        import httplib as http_client 
+    except ImportError: 
+        import http.client as http_client
+    HOST = "127.0.0.1:5000"
+    endpoint = "/installation_data/"
+    successful_installs = []
+    failed_installs = []
+    for checker, version in successes_list:
+        successful_installs.append({"name": checker.full_name(),
+                "version": version})
+    for checker, version in failures_list:
+        failed_installs.append({"name": checker.full_name(),
+                "version": version})
+    user_system_info = {}
+    headers = {"Content-Type": "application/json"}
+    data = {"successful_installs" : successful_installs, 
+            "failed_installs" : failed_installs, "user_system_info":user_system_info}
+    data = json.dumps(data) 
+    conn = http_client.HTTPConnection(HOST)
+    print("\nPushing the data to server....\n")
+    try:
+        conn.request("POST", endpoint, data, headers=headers) 
+        response = conn.getresponse()
+    except:
+        print("\nConnection could not be established with server!")
+
+    print(response.read())
+    conn.close()
 
 if __name__ == '__main__':
     import optparse as _optparse
@@ -1024,7 +1059,8 @@ if __name__ == '__main__':
               'installation issues'))
     options,args = parser.parse_args()
     try:
-        passed = check(args)
+        passed, successes_list, failures_list = check(args)
+        send_to_server(successes_list, failures_list) # Push data to server
     except InvalidCheck as e:
         print("I don't know how to check for {0!r}".format(e.check))
         print('I do know how to check for:')
