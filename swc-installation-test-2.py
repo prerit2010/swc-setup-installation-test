@@ -1017,12 +1017,25 @@ def send_to_server(successes_list, failures_list):
     
     """
     import json
+    import datetime
     try: 
         import httplib as http_client 
     except ImportError: 
         import http.client as http_client
     HOST = "127.0.0.1:5000"
     endpoint = "/installation_data/"
+
+    try:
+        with open('key.txt', 'r') as f:
+            first_line = f.readline()
+            unique_id = first_line.split("[key:]")[1]
+            date = first_line.split("[key:]")[0]
+            if date != str(datetime.date.today()):
+                unique_id = None
+    except Exception,e:
+        print(str(e))
+        unique_id = None
+
     successful_installs = []
     failed_installs = []
     for checker, version in successes_list:
@@ -1034,17 +1047,22 @@ def send_to_server(successes_list, failures_list):
     user_system_info = {}
     headers = {"Content-Type": "application/json"}
     data = {"successful_installs" : successful_installs, 
-            "failed_installs" : failed_installs, "user_system_info":user_system_info}
+            "failed_installs" : failed_installs, "user_system_info":user_system_info,
+            "unique_user_id" : unique_id}
     data = json.dumps(data) 
     conn = http_client.HTTPConnection(HOST)
     print("\nPushing the data to server....\n")
     try:
         conn.request("POST", endpoint, data, headers=headers) 
         response = conn.getresponse()
+        response_string = response.read()
+        print(response_string)
+        response = json.loads(response_string)
+        unique_id = response.get("key")
+        file = open('key.txt', 'w+')
+        file.write(str(datetime.date.today()) + "[key:]" + unique_id)
     except:
         print("\nConnection could not be established with server!")
-
-    print(response.read())
     conn.close()
 
 if __name__ == '__main__':
