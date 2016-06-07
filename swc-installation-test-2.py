@@ -1034,7 +1034,6 @@ def send_to_server(successes_list, failures_list):
             if date != str(datetime.date.today()):
                 unique_id = None
     except Exception,e:
-        print(str(e))
         unique_id = None
 
     successful_installs = []
@@ -1053,7 +1052,7 @@ def send_to_server(successes_list, failures_list):
     machine = _platform.machine()
     system_platform = _platform.platform()
     python_version = _platform.python_version()
-    
+
     user_system_info = {"distribution_name": distribution_name, 
                         "distribution_version" : distribution_version,
                         "system" : system, "system_version" : system_version,
@@ -1070,11 +1069,16 @@ def send_to_server(successes_list, failures_list):
         conn.request("POST", endpoint, data, headers=headers) 
         response = conn.getresponse()
         response_string = response.read()
-        print(response_string)
-        response = json.loads(response_string)
-        unique_id = response.get("key")
-        file = open('key.txt', 'w+')
-        file.write(str(datetime.date.today()) + "[key:]" + unique_id)
+        # print(response_string)
+        if response.status == 200:
+            print("\nSuccessfully Pushed to Server!")
+            response = json.loads(response_string)
+            unique_id = response.get("key")
+            file = open('key.txt', 'w+')
+            file.write(str(datetime.date.today()) + "[key:]" + unique_id)
+        else:
+            print("\nSomething bad happened at Server!")
+        
     except:
         print("\nConnection could not be established with server!")
     conn.close()
