@@ -1045,7 +1045,20 @@ def send_to_server(successes_list, failures_list):
     for checker, version in failures_list:
         failed_installs.append({"name": checker.full_name(),
                 "version": version})
-    user_system_info = {}
+    # User's System information :
+    distribution_name = _platform.linux_distribution()[0]
+    distribution_version = _platform.linux_distribution()[1]
+    system = _platform.system()
+    system_version = _platform.version()
+    machine = _platform.machine()
+    system_platform = _platform.platform()
+    python_version = _platform.python_version()
+    
+    user_system_info = {"distribution_name": distribution_name, 
+                        "distribution_version" : distribution_version,
+                        "system" : system, "system_version" : system_version,
+                        "machine" : machine, "system_platform" : system_platform,
+                        "python_version" : python_version }
     headers = {"Content-Type": "application/json"}
     data = {"successful_installs" : successful_installs, 
             "failed_installs" : failed_installs, "user_system_info":user_system_info,
