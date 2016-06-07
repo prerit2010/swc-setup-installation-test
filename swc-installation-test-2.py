@@ -79,6 +79,7 @@ if not hasattr(_shlex, 'quote'):  # Python versions older than 3.3
 
 
 __version__ = '0.1'
+HOST = "127.0.0.1:5000"
 
 # Comment out any entries you don't need
 CHECKS = [
@@ -1022,7 +1023,7 @@ def send_to_server(successes_list, failures_list):
         import httplib as http_client 
     except ImportError: 
         import http.client as http_client
-    HOST = "127.0.0.1:5000"
+    
     endpoint = "/installation_data/"
 
     try:
