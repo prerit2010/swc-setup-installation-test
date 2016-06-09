@@ -17,26 +17,26 @@ of packages, you can list them on the command line.  For example:
 
   python swc-installation-test-2.py git virtual-editor
 
-This is useful if the original test told you to install a more recent
-version of a particular dependency, and you just want to re-test that
-dependency.
-"""
+    This is useful if the original test told you to install a more recent
+    version of a particular dependency, and you just want to re-test that
+    dependency.
+    """
 
-# Some details about the implementation:
+    # Some details about the implementation:
 
-# The dependencies are divided into a hierarchy of classes rooted on
-# Dependency class. You can refer to the code to see which package
-# comes under which type of dependency.
+    # The dependencies are divided into a hierarchy of classes rooted on
+    # Dependency class. You can refer to the code to see which package
+    # comes under which type of dependency.
 
-# The CHECKER dictionary stores information about all the dependencies
-# and CHECKS stores list of the dependencies which are to be checked in
-# the current workshop.
+    # The CHECKER dictionary stores information about all the dependencies
+    # and CHECKS stores list of the dependencies which are to be checked in
+    # the current workshop.
 
-# In the "__name__ == '__main__'" block, we launch all the checks with
-# check() function, which prints information about the tests as they run
-# and details about the failures after the tests complete. In case of
-# failure, the functions print_system_info() and print_suggestions()
-# are called after this, where the former prints information about the
+    # In the "__name__ == '__main__'" block, we launch all the checks with
+    # check() function, which prints information about the tests as they run
+    # and details about the failures after the tests complete. In case of
+    # failure, the functions print_system_info() and print_suggestions()
+    # are called after this, where the former prints information about the
 # user's system for debugging purposes while the latter prints some
 # suggestions to follow.
 
@@ -233,6 +233,10 @@ class DependencyError (Exception):
                 return url
         return self._default_url
 
+    def get_data(self):
+        data = {"error_description" : self.message}
+        return data
+
     def __str__(self):
         url = self.get_url()
         lines = [
@@ -265,7 +269,9 @@ def check(checks=None):
         except DependencyError as e:
             failure_messages.append(e)
             _sys.stdout.write('fail\n')
-            failures.append((checker, version))
+            e_data = e.get_data()
+            failures.append({"name": checker.full_name(), "version" : version,
+                             "error_description": e_data.get('error_description')})
         else:
             _sys.stdout.write('pass\n')
             successes.append((checker, version))
@@ -277,7 +283,6 @@ def check(checks=None):
                     version or 'unknown'))
     if failures:
         print('\nFailures:')
-        failures = list(set(failures))
         failure_messages = set(failure_messages)
         for failure in failure_messages:
             print()
@@ -1037,14 +1042,10 @@ def send_to_server(successes_list, failures_list):
         unique_id = None
 
     successful_installs = []
-    failed_installs = []
+    failed_installs = failures_list
     for checker, version in successes_list:
         successful_installs.append({"name": checker.full_name(),
                 "version": version})
-    for checker, version in failures_list:
-        failed_installs.append({"name": checker.full_name(),
-                "version": version})
-    # User's System information :
     distribution_name = _platform.linux_distribution()[0]
     distribution_version = _platform.linux_distribution()[1]
     system = _platform.system()
@@ -1077,8 +1078,7 @@ def send_to_server(successes_list, failures_list):
             file = open('key.txt', 'w+')
             file.write(str(datetime.date.today()) + "[key:]" + unique_id)
         else:
-            print("\nSomething bad happened at Server!")
-        
+            print("\nSomething bad happened at Server!")  
     except:
         print("\nConnection could not be established with server!")
     conn.close()
