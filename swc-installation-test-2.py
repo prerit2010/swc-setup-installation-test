@@ -79,8 +79,8 @@ if not hasattr(_shlex, 'quote'):  # Python versions older than 3.3
 
 
 __version__ = '0.1'
-# HOST = "127.0.0.1:5000"
-HOST = "installation.software-carpentry.org"
+HOST = "127.0.0.1:5000"
+# HOST = "installation.software-carpentry.org"
 
 # Comment out any entries you don't need
 CHECKS = [
@@ -268,6 +268,8 @@ def check(checks=None):
         try:
             version = checker.check()
         except DependencyError as e:
+            if version not  in locals() or version is None:
+                version = "unknown"
             failure_messages.append(e)
             _sys.stdout.write('fail\n')
             e_data = e.get_data()
@@ -1039,7 +1041,7 @@ def send_to_server(successes_list, failures_list):
             date = first_line.split("[key:]")[0]
             if date != str(datetime.date.today()):
                 unique_id = None
-    except Exception,e:
+    except:
         unique_id = None
 
     successful_installs = []
@@ -1074,7 +1076,7 @@ def send_to_server(successes_list, failures_list):
         # print(response_string)
         if response.status == 200:
             print("\nSuccessfully Pushed to Server!")
-            response = json.loads(response_string)
+            response = json.loads(response_string.decode('utf-8'))
             unique_id = response.get("key")
             file = open('key.txt', 'w+')
             file.write(str(datetime.date.today()) + "[key:]" + unique_id)
