@@ -117,10 +117,10 @@ CHECKS = [
     'scipy',
     'matplotlib',
     'pandas',
-    #'sympy',
-    #'Cython',
-    #'networkx',
-    #'mayavi.mlab',
+    # 'sympy',
+    # 'Cython',
+    # 'networkx',
+    # 'mayavi.mlab',
     ]
 
 CHECKER = {}
@@ -268,7 +268,7 @@ def check(checks=None):
         try:
             version = checker.check()
         except DependencyError as e:
-            if version not  in locals() or version is None:
+            if 'version' not  in locals() or version is None:
                 version = "unknown"
             failure_messages.append(e)
             _sys.stdout.write('fail\n')
