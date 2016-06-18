@@ -1025,8 +1025,7 @@ def send_to_server(successes_list, failures_list):
     This function sends the details of failures and successes to server.
     
     """
-    import json
-    import datetime
+    import json, signal, sys, datetime
     try: 
         import httplib as http_client 
     except ImportError: 
@@ -1066,25 +1065,47 @@ def send_to_server(successes_list, failures_list):
     data = {"successful_installs" : successful_installs, 
             "failed_installs" : failed_installs, "user_system_info":user_system_info,
             "unique_user_id" : unique_id}
-    data = json.dumps(data) 
-    conn = http_client.HTTPConnection(HOST)
-    print("\nPushing the data to server....\n")
+    
+    def senddata():
+        final_data = json.dumps(data) 
+        conn = http_client.HTTPConnection(HOST)
+        print("\nPushing the data to server....\n")
+        try:
+            conn.request("POST", endpoint, final_data, headers=headers) 
+            response = conn.getresponse()
+            response_string = response.read()
+            # print(response_string)
+            if response.status == 200:
+                print("\nSuccessfully Pushed to Server!")
+                response = json.loads(response_string.decode('utf-8'))
+                unique_id = response.get("key")
+                file = open('key.txt', 'w+')
+                file.write(str(datetime.date.today()) + "[key:]" + unique_id)
+            else:
+                print("\nSomething bad happened at Server!")  
+        except:
+            print("\nConnection could not be established with server!")
+        conn.close()
+    def handler(signum, frame): # captures ctrl+z
+        senddata()
+        sys.exit(0)
+    signal.signal(signal.SIGTSTP, handler)
     try:
-        conn.request("POST", endpoint, data, headers=headers) 
-        response = conn.getresponse()
-        response_string = response.read()
-        # print(response_string)
-        if response.status == 200:
-            print("\nSuccessfully Pushed to Server!")
-            response = json.loads(response_string.decode('utf-8'))
-            unique_id = response.get("key")
-            file = open('key.txt', 'w+')
-            file.write(str(datetime.date.today()) + "[key:]" + unique_id)
-        else:
-            print("\nSomething bad happened at Server!")  
-    except:
-        print("\nConnection could not be established with server!")
-    conn.close()
+        global input
+        try:
+            input = raw_input
+        except NameError:
+            pass
+        choice = input("\nPlease share your email id and workshop_id with us " \
+                        "to improve our scripts.\nAre you in ? (y/n) :")
+        if choice == 'y' or choice == 'Y':
+            email = input("Please Enter your email id: ")
+            data['user_system_info']['email_id'] = email
+            workshop_id = input("Please Enter the workshop id: ")
+            data['user_system_info']['workshop_id'] = workshop_id
+        senddata()
+    except KeyboardInterrupt: #for catching ctrl+c
+        senddata()
 
 if __name__ == '__main__':
     import optparse as _optparse
