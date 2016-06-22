@@ -273,8 +273,11 @@ def check(checks=None):
             failure_messages.append(e)
             _sys.stdout.write('fail\n')
             e_data = e.get_data()
-            failures.append({"name": checker.full_name(), "version" : version,
-                             "error_description": e_data.get('error_description')})
+            failures.append({
+                "name": checker.full_name(),
+                "version" : version,
+                "error_description": e_data.get('error_description')
+                })
         else:
             _sys.stdout.write('pass\n')
             successes.append((checker, version))
@@ -1046,25 +1049,26 @@ def send_to_server(successes_list, failures_list):
     successful_installs = []
     failed_installs = failures_list
     for checker, version in successes_list:
-        successful_installs.append({"name": checker.full_name(),
-                "version": version})
-    distribution_name = _platform.linux_distribution()[0]
-    distribution_version = _platform.linux_distribution()[1]
-    system = _platform.system()
-    system_version = _platform.version()
-    machine = _platform.machine()
-    system_platform = _platform.platform()
-    python_version = _platform.python_version()
-
-    user_system_info = {"distribution_name": distribution_name, 
-                        "distribution_version" : distribution_version,
-                        "system" : system, "system_version" : system_version,
-                        "machine" : machine, "system_platform" : system_platform,
-                        "python_version" : python_version }
-    headers = {"Content-Type": "application/json"}
-    data = {"successful_installs" : successful_installs, 
-            "failed_installs" : failed_installs, "user_system_info":user_system_info,
-            "unique_user_id" : unique_id}
+        successful_installs.append({
+            "name": checker.full_name(),
+            "version": version
+            })
+    user_system_info = {
+        "distribution_name" : _platform.linux_distribution()[0], 
+        "distribution_version" : _platform.linux_distribution()[1],
+        "system" : _platform.system(),
+        "system_version" : _platform.version(),
+        "machine" : _platform.machine(),
+        "system_platform" : _platform.platform(),
+        "python_version" : _platform.python_version()
+        }
+    headers = {"Content-Type" : "application/json"}
+    data = {
+        "successful_installs" : successful_installs, 
+        "failed_installs" : failed_installs,
+        "user_system_info" : user_system_info,
+        "unique_user_id" : unique_id
+        }
     
     def senddata():
         final_data = json.dumps(data) 
@@ -1086,26 +1090,20 @@ def send_to_server(successes_list, failures_list):
         except:
             print("\nConnection could not be established with server!")
         conn.close()
-    def handler(signum, frame): # captures ctrl+z
-        senddata()
-        sys.exit(0)
-    signal.signal(signal.SIGTSTP, handler)
+
+    global input
     try:
-        global input
-        try:
-            input = raw_input
-        except NameError:
-            pass
-        choice = input("\nPlease share your email id and workshop_id with us " \
-                        "to improve our scripts.\nAre you in ? (y/n) :")
-        if choice == 'y' or choice == 'Y':
-            email = input("Please Enter your email id: ")
-            data['user_system_info']['email_id'] = email
-            workshop_id = input("Please Enter the workshop id: ")
-            data['user_system_info']['workshop_id'] = workshop_id
-        senddata()
-    except KeyboardInterrupt: #for catching ctrl+c
-        senddata()
+        input = raw_input # making it compatible for Python 3.x and 2.x
+    except NameError:
+        pass
+    choice = input("\nPlease share your email id and workshop_id with us " \
+                    "to improve our scripts.\nAre you in ? (y/n) : ")
+    if choice == 'y' or choice == 'Y':
+        email = input("Please Enter your email id: ")
+        data['user_system_info']['email_id'] = email
+        workshop_id = input("Please Enter the workshop id: ")
+        data['user_system_info']['workshop_id'] = workshop_id
+    senddata()
 
 if __name__ == '__main__':
     import optparse as _optparse
