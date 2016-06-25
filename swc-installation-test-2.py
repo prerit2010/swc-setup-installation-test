@@ -79,8 +79,8 @@ if not hasattr(_shlex, 'quote'):  # Python versions older than 3.3
 
 
 __version__ = '0.1'
-HOST = "127.0.0.1:5000"
-# HOST = "installation.software-carpentry.org"
+# HOST = "127.0.0.1:5000"
+HOST = "installation.software-carpentry.org"
 
 # Comment out any entries you don't need
 CHECKS = [
