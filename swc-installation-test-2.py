@@ -1117,13 +1117,20 @@ if __name__ == '__main__':
               'installation issues'))
     parser.add_option(
         '-H', '--host', action='store', type="string",
-        help=('Select the server to which the data will be sent'), dest="host_name")
+        help=('Change the server to which the data will be sent'), dest="host_name")
+    parser.add_option(
+        '-n', '--no_reporting', action='store_true',
+        help=('Turn off sending the data to server'))
     options,args = parser.parse_args()
     try:
         passed, successes_list, failures_list = check(args)
+        """Check whether host name is specified as a command line argument"""
         if options.host_name:
             HOST = options.host_name
-        send_to_server(successes_list, failures_list) # Push data to server
+        """Check whether sending data to server is turned off using
+           command line argument"""
+        if options.no_reporting is None:
+            send_to_server(successes_list, failures_list) # Push data to server
     except InvalidCheck as e:
         print("I don't know how to check for {0!r}".format(e.check))
         print('I do know how to check for:')
