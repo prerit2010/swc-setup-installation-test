@@ -1115,9 +1115,15 @@ if __name__ == '__main__':
         '-v', '--verbose', action='store_true',
         help=('print additional information to help troubleshoot '
               'installation issues'))
+    parser.add_option(
+        '-H', '--host', action='store', type="string",
+        help=('Select the server to which the data will be sent'), dest="host_name")
     options,args = parser.parse_args()
     try:
         passed, successes_list, failures_list = check(args)
+        if options.host_name:
+            global HOST
+            HOST = options.host_name
         send_to_server(successes_list, failures_list) # Push data to server
     except InvalidCheck as e:
         print("I don't know how to check for {0!r}".format(e.check))
