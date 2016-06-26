@@ -1122,7 +1122,6 @@ if __name__ == '__main__':
     try:
         passed, successes_list, failures_list = check(args)
         if options.host_name:
-            global HOST
             HOST = options.host_name
         send_to_server(successes_list, failures_list) # Push data to server
     except InvalidCheck as e:
