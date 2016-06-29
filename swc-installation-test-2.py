@@ -1037,7 +1037,7 @@ def send_to_server(successes_list, failures_list):
     endpoint = "/installation_data/"
 
     try:
-        with open('key.txt', 'r') as f:
+        with open('.swc_submission_id', 'r') as f:
             first_line = f.readline()
             unique_id = first_line.split("[key:]")[1]
             date = first_line.split("[key:]")[0]
@@ -1083,7 +1083,7 @@ def send_to_server(successes_list, failures_list):
                 print("\nSuccessfully Pushed to Server!")
                 response = json.loads(response_string.decode('utf-8'))
                 unique_id = response.get("key")
-                file = open('key.txt', 'w+')
+                file = open('.swc_submission_id', 'w+')
                 file.write(str(datetime.date.today()) + "[key:]" + unique_id)
             else:
                 print("\nSomething bad happened at Server!")  
