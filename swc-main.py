@@ -62,7 +62,7 @@ if __name__ == '__main__':
     else:
         print('Failed')
         print('Install a current version of Python!')
-        print('http://www.python.org/download/releases/2.7.3/#download')
+        print('https://www.python.org/downloads/release/python-352/')
         _sys.exit(1)
 
     parser = _optparse.OptionParser(usage='%prog [options] [check...]')
