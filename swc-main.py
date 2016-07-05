@@ -47,7 +47,23 @@ CHECKS = [
     # 'mayavi.mlab',
     ]
 
+def python_version_check():
+    print("Checking for python version...")
+    if _sys.version_info < (2, 6):
+        print('check for Python version (python):')
+        print('outdated version of Python: ' + _sys.version)
+        return False
+    return True
+
 if __name__ == '__main__':
+
+    if python_version_check():
+        print('Passed')
+    else:
+        print('Failed')
+        print('Install a current version of Python!')
+        print('http://www.python.org/download/releases/2.7.3/#download')
+        _sys.exit(1)
 
     parser = _optparse.OptionParser(usage='%prog [options] [check...]')
     epilog = __doc__
