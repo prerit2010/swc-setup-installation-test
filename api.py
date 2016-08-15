@@ -84,7 +84,7 @@ def submit(successes_list, failures_list, HOST):
     if choice == 'y' or choice == 'Y':
         workshop_id = input("Please enter your workshop name (similar to '2016-08-13-place', ask your instructor for details) (none by default): ")
         if not workshop_id:
-            workshop_id = "No workshop name provided"
+            workshop_id = None
         email = input("What is your email address (none by default): ")
         if not email:
             email = None
