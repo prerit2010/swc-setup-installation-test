@@ -1,16 +1,16 @@
 For learners
 ============
 
-This directory contains scripts for testing your machine to make sure
+This directory contains script for testing your machine to make sure
 you have the software you'll need for your workshop installed.  See
 the comments at the head of each script for more details, but you'll
 basically want to see something like:
 
-    $ python swc-installation-test-1.py
+    $ python swc-main.py
+    Checking for python version...
     Passed
-    $ python swc-installation-test-2.py
-    check virtual-shell...  pass
-    …
+    check command line shell (virtual-shell)... pass
+    ...
     Successes:
 
     virtual-shell Bourne Again Shell (bash) 4.2.37
@@ -18,7 +18,9 @@ basically want to see something like:
 
 If you see something like:
 
-    $ python swc-installation-test-2.py
+    $ python swc-main.py
+    Checking for python version...
+    Passed
     check virtual-shell...  fail
     …
     check for command line shell (virtual-shell) failed:
@@ -36,7 +38,7 @@ follow the suggestions to try and install any missing software.  For
 additional troubleshooting information, you can use the `--verbose`
 option:
 
-    $ python swc-installation-test-2.py --verbose
+    $ python swc-main.py --verbose
     check virtual-shell...  fail
     …
     ==================
@@ -48,17 +50,17 @@ option:
 For instructors
 ===============
 
-`swc-installation-test-1.py` is pretty simple, and just checks that
-the students have a recent enough version of Python installed that
-they'll be able to parse `swc-installation-test-2.py`.  The latter
-checks for a list of dependencies and prints error messages if a
+`swc-main.py` first checks that the students have a recent enough 
+version of Python installed that they'll be able to parse
+`swc-main.py` completely.  If python version is found to be at least 2.6,
+then it checks for a list of dependencies and prints error messages if a
 package is not installed, or if the installed version is not current
 enough.  By default, the script checks for pretty much anything that
 has ever been used at a Software Carpentry workshop, which is probably
 not what you want for your particular workshop.
 
 Before your workshop, you should go through
-`swc-installation-test-2.py` and comment any dependencies you don't
+`swc-main.py` and comment any dependencies you don't
 need out of the `CHECKS` list.  You might also want to skim through
 the minimum version numbers listed where particular dependencies are
 defined (e.g. `('git', 'Git', (1, 7, 0), None)`).  For the most part,

@@ -1,45 +1,14 @@
 #!/usr/bin/env python
 
-"""Test script to check for required functionality.
+"""
+Some details about the implementation:
 
-Execute this code at the command line by typing:
+The dependencies are divided into a hierarchy of classes rooted on
+Dependency class. You can refer to the code to see which package
+comes under which type of dependency.
 
-  python swc-installation-test-2.py
-
-Run the script and follow the instructions it prints at the end.
-
-This script requires at least Python 2.6.  You can check the version
-of Python that you have installed with 'swc-installation-test-1.py'.
-
-By default, this script will test for all the dependencies your
-instructor thinks you need.  If you want to test for a different set
-of packages, you can list them on the command line.  For example:
-
-  python swc-installation-test-2.py git virtual-editor
-
-    This is useful if the original test told you to install a more recent
-    version of a particular dependency, and you just want to re-test that
-    dependency.
-    """
-
-    # Some details about the implementation:
-
-    # The dependencies are divided into a hierarchy of classes rooted on
-    # Dependency class. You can refer to the code to see which package
-    # comes under which type of dependency.
-
-    # The CHECKER dictionary stores information about all the dependencies
-    # and CHECKS stores list of the dependencies which are to be checked in
-    # the current workshop.
-
-    # In the "__name__ == '__main__'" block, we launch all the checks with
-    # check() function, which prints information about the tests as they run
-    # and details about the failures after the tests complete. In case of
-    # failure, the functions print_system_info() and print_suggestions()
-    # are called after this, where the former prints information about the
-# user's system for debugging purposes while the latter prints some
-# suggestions to follow.
-
+The CHECKER dictionary stores information about all the dependencies
+"""
 
 from __future__ import print_function  # for Python 2.6 compatibility
 
@@ -80,48 +49,6 @@ if not hasattr(_shlex, 'quote'):  # Python versions older than 3.3
 
 __version__ = '0.1'
 # HOST = "127.0.0.1:5000"
-HOST = "installation.software-carpentry.org"
-
-# Comment out any entries you don't need
-CHECKS = [
-# Shell
-    'virtual-shell',
-# Editors
-    'virtual-editor',
-# Browsers
-    'virtual-browser',
-# Version control
-    'git',
-    'hg',              # Command line tool
-    #'mercurial',       # Python package
-    'EasyMercurial',
-# Build tools and packaging
-    'make',
-    'virtual-pypi-installer',
-    'setuptools',
-    #'xcode',
-# Testing
-    'nosetests',       # Command line tool
-    'nose',            # Python package
-    'py.test',         # Command line tool
-    'pytest',          # Python package
-# SQL
-    'sqlite3',         # Command line tool
-    'sqlite3-python',  # Python package
-# Python
-    'python',
-    'ipython',         # Command line tool
-    'IPython',         # Python package
-    'argparse',        # Useful for utility scripts
-    'numpy',
-    'scipy',
-    'matplotlib',
-    'pandas',
-    # 'sympy',
-    # 'Cython',
-    # 'networkx',
-    # 'mayavi.mlab',
-    ]
 
 CHECKER = {}
 
@@ -257,8 +184,8 @@ def check(checks=None):
     successes = []
     failures = []
     failure_messages = []
-    if not checks:
-        checks = CHECKS
+    # if not checks:
+    #     checks = CHECKS
     for check in checks:
         try:
             checker = CHECKER[check]
@@ -1022,128 +949,3 @@ def print_suggestions(instructor_fallback=True):
         print('')
         print('For help, email the *entire* output of this script to')
         print('your instructor.')
-
-def send_to_server(successes_list, failures_list):
-    """
-    This function sends the details of failures and successes to server.
-    
-    """
-    import json, signal, sys, datetime
-    try: 
-        import httplib as http_client 
-    except ImportError: 
-        import http.client as http_client
-    
-    endpoint = "/installation_data/"
-
-    try:
-        with open('.swc_submission_id', 'r') as f:
-            first_line = f.readline()
-            unique_id = first_line.split("[key:]")[1]
-            date = first_line.split("[key:]")[0]
-            if date != str(datetime.date.today()):
-                unique_id = None
-    except:
-        unique_id = None
-
-    successful_installs = []
-    failed_installs = failures_list
-    for checker, version in successes_list:
-        successful_installs.append({
-            "name": checker.full_name(),
-            "version": version
-            })
-    user_system_info = {
-        "distribution_name" : _platform.linux_distribution()[0], 
-        "distribution_version" : _platform.linux_distribution()[1],
-        "system" : _platform.system(),
-        "system_version" : _platform.version(),
-        "machine" : _platform.machine(),
-        "system_platform" : _platform.platform(),
-        "python_version" : _platform.python_version()
-        }
-    headers = {"Content-Type" : "application/json"}
-    data = {
-        "successful_installs" : successful_installs, 
-        "failed_installs" : failed_installs,
-        "user_system_info" : user_system_info,
-        "unique_user_id" : unique_id
-        }
-    
-    def senddata():
-        final_data = json.dumps(data) 
-        conn = http_client.HTTPConnection(HOST)
-        print("\nPushing the data to server....\n")
-        try:
-            conn.request("POST", endpoint, final_data, headers=headers) 
-            response = conn.getresponse()
-            response_string = response.read()
-            # print(response_string)
-            if response.status == 200:
-                print("\nSuccessfully Pushed to Server!")
-                response = json.loads(response_string.decode('utf-8'))
-                unique_id = response.get("key")
-                file = open('.swc_submission_id', 'w+')
-                file.write(str(datetime.date.today()) + "[key:]" + unique_id)
-            else:
-                print("\nSomething bad happened at Server!")  
-        except:
-            print("\nConnection could not be established with server!")
-        conn.close()
-
-    global input
-    try:
-        input = raw_input # making it compatible for Python 3.x and 2.x
-    except NameError:
-        pass
-    choice = input("\nPlease share your email id and workshop_id with us " \
-                    "to improve our scripts.\nAre you in ? (y/n) : ")
-    if choice == 'y' or choice == 'Y':
-        email = input("Please Enter your email id: ")
-        data['user_system_info']['email_id'] = email
-        workshop_id = input("Please Enter the workshop id: ")
-        data['user_system_info']['workshop_id'] = workshop_id
-    senddata()
-
-if __name__ == '__main__':
-    import optparse as _optparse
-
-    parser = _optparse.OptionParser(usage='%prog [options] [check...]')
-    epilog = __doc__
-    parser.format_epilog = lambda formatter: '\n' + epilog
-    parser.add_option(
-        '-v', '--verbose', action='store_true',
-        help=('print additional information to help troubleshoot '
-              'installation issues'))
-    parser.add_option(
-        '-H', '--host', action='store', type="string",
-        help=('Change the server to which the data will be sent'), dest="host_name")
-    parser.add_option(
-        '-n', '--no_reporting', action='store_true',
-        help=('Turn off sending the data to server'))
-    options,args = parser.parse_args()
-    try:
-        passed, successes_list, failures_list = check(args)
-        """Check whether host name is specified as a command line argument"""
-        if options.host_name:
-            HOST = options.host_name
-        """Check whether sending data to server is turned off using
-           command line argument"""
-        if options.no_reporting is None:
-            send_to_server(successes_list, failures_list) # Push data to server
-    except InvalidCheck as e:
-        print("I don't know how to check for {0!r}".format(e.check))
-        print('I do know how to check for:')
-        for key,checker in sorted(CHECKER.items()):
-            if checker.long_name != checker.name:
-                print('  {0} {1}({2})'.format(
-                        key, ' '*(20-len(key)), checker.long_name))
-            else:
-                print('  {0}'.format(key))
-        _sys.exit(1)
-    if not passed:
-        if options.verbose:
-            print()
-            print_system_info()
-            print_suggestions(instructor_fallback=True)
-        _sys.exit(1)
