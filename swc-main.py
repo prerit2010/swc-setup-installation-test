@@ -1,3 +1,39 @@
+"""Test script to check for required functionality.
+
+Execute this code at the command line by typing:
+
+  python swc-main.py
+
+Run the script and follow the instructions it prints at the end.
+
+This script requires at least Python 2.6.  It will first check for the
+existing version of python installed on your system, and will proceed further
+only if you have at least Python 2.6.
+
+By default, this script will test for all the dependencies your
+instructor thinks you need.  If you want to test for a different set
+of packages, you can list them on the command line.  For example:
+
+  python swc-main.py git virtual-editor
+
+    This is useful if the original test told you to install a more recent
+    version of a particular dependency, and you just want to re-test that
+    dependency.
+    """
+# Some details about the implementation:
+
+# CHECKS list stores a list of the dependencies which are to be checked in
+# the current workshop.
+
+# In the "__name__ == '__main__'" block, we launch all the checks with
+# check() function of requirements_check.py, which prints information about the tests as they run
+# and details about the failures after the tests complete. In case of
+# failure, the functions print_system_info() and print_suggestions()
+# are called after this, where the former prints information about the
+# user's system for debugging purposes while the latter prints some
+# suggestions to follow.
+
+
 import requirements_check
 from requirements_check import InvalidCheck, CHECKER
 import api as API
