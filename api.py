@@ -97,4 +97,4 @@ def submit(successes_list, failures_list, HOST):
         data['user_system_info']['workshop_id'] = workshop_id
         senddata()
     else:
-        sys.exit(0)
+        return
