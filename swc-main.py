@@ -8,31 +8,31 @@ HOST = "installation.software-carpentry.org"
 
 # Comment out any entries you don't need
 CHECKS = [
-# Shell
+    # Shell
     'virtual-shell',
-# Editors
+    # Editors
     'virtual-editor',
-# Browsers
+    # Browsers
     'virtual-browser',
-# Version control
+    # Version control
     'git',
     'hg',              # Command line tool
-    #'mercurial',       # Python package
+    # 'mercurial',       # Python package
     'EasyMercurial',
-# Build tools and packaging
+    # Build tools and packaging
     'make',
     'virtual-pypi-installer',
     'setuptools',
-    #'xcode',
-# Testing
+    # 'xcode',
+    # Testing
     'nosetests',       # Command line tool
     'nose',            # Python package
     'py.test',         # Command line tool
     'pytest',          # Python package
-# SQL
+    # SQL
     'sqlite3',         # Command line tool
     'sqlite3-python',  # Python package
-# Python
+    # Python
     'python',
     'ipython',         # Command line tool
     'IPython',         # Python package
@@ -45,7 +45,8 @@ CHECKS = [
     # 'Cython',
     # 'networkx',
     # 'mayavi.mlab',
-    ]
+]
+
 
 def python_version_check():
     print("Checking for python version...")
@@ -61,8 +62,7 @@ if __name__ == '__main__':
         print('Passed')
     else:
         print('Failed')
-        print('Install a current version of Python!')
-        print('https://www.python.org/downloads/release/python-352/')
+        print('Install the newest version from https://www.python.org/downloads/ or ask instructors for help')
         _sys.exit(1)
 
     parser = _optparse.OptionParser(usage='%prog [options] [check...]')
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     parser.add_option(
         '-n', '--no_reporting', action='store_true',
         help=('Turn off sending the data to server'))
-    options,args = parser.parse_args()
+    options, args = parser.parse_args()
     try:
         if not args:
             args = CHECKS
@@ -93,10 +93,10 @@ if __name__ == '__main__':
     except InvalidCheck as e:
         print("I don't know how to check for {0!r}".format(e.check))
         print('I do know how to check for:')
-        for key,checker in sorted(CHECKER.items()):
+        for key, checker in sorted(CHECKER.items()):
             if checker.long_name != checker.name:
                 print('  {0} {1}({2})'.format(
-                        key, ' '*(20-len(key)), checker.long_name))
+                    key, ' ' * (20 - len(key)), checker.long_name))
             else:
                 print('  {0}'.format(key))
         _sys.exit(1)
