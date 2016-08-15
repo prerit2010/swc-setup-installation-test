@@ -1,3 +1,8 @@
+"""
+This file sends the data collected by the script 'swc-main.py'
+to server.
+"""
+
 import json
 import sys
 import datetime
