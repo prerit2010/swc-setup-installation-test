@@ -99,7 +99,7 @@ if __name__ == '__main__':
     else:
         print('Failed')
         print('Install the newest version from https://www.python.org/downloads/ or ask instructors for help')
-        _sys.exit(1)
+        _sys.exit(0)
 
     parser = _optparse.OptionParser(usage='%prog [options] [check...]')
     epilog = __doc__
@@ -135,10 +135,10 @@ if __name__ == '__main__':
                     key, ' ' * (20 - len(key)), checker.long_name))
             else:
                 print('  {0}'.format(key))
-        _sys.exit(1)
+        _sys.exit(0)
     if not passed:
         if options.verbose:
             print()
             requirements_check.print_system_info()
             requirements_check.print_suggestions(instructor_fallback=True)
-        _sys.exit(1)
+        _sys.exit(0)
